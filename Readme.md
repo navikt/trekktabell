@@ -1,5 +1,5 @@
 # Trekkrutine for beregning av forskuddstrekk
-Dette er en fork fra [Skatteetatens trekktabell](https://github.com/Skatteetaten/trekktabell) kun laget for å gi oss (NAV) mulighhet til å deploye den som en artifakt. 
+Dette er en fork fra [Skatteetatens trekktabell](https://github.com/Skatteetaten/trekktabell) kun laget for å gi oss (NAV) mulighet til å deploye den som en artifakt. 
 
 Disse java-klassene beregner tabelltrekk for inntektsåret 2025.
 
