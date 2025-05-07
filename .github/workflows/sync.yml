@@ -12,8 +12,10 @@ jobs:
       - name: Checkout the fork
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: false
+          clean: true
 
       - name: Set up master branch
         run: |
