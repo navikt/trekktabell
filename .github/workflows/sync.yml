@@ -27,5 +27,11 @@ jobs:
 
       - name: Rebase main onto upstream/main
         run: |
+          echo "Status before:"
+          git status
+          git show-ref
           git rebase upstream/master || git rebase --abort
+          echo "Status after:"
+          git status
+          git show-ref
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} master --force-with-lease
