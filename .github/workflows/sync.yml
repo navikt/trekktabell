@@ -20,6 +20,17 @@ jobs:
           git checkout master
           git reset --hard origin/master
 
+      - name: Print current HEAD and remotes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "HEAD: $(git rev-parse HEAD)"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git
+          git fetch origin master
+          echo "Origin/master: $(git rev-parse origin/master)"
+          git log --oneline --graph --decorate --all -n 10
+
       - name: Add upstream remote
         run: |
           git remote get-url upstream || git remote add upstream https://github.com/Skatteetaten/trekktabell.git
@@ -27,11 +38,5 @@ jobs:
 
       - name: Rebase main onto upstream/main
         run: |
-          echo "Status before:"
-          git status
-          git show-ref
           git rebase upstream/master || git rebase --abort
-          echo "Status after:"
-          git status
-          git show-ref
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} master --force-with-lease
