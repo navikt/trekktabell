@@ -16,9 +16,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Set up master branch
+        run: |
+          git fetch origin master
+          git checkout master
+          git reset --hard origin/master
+
       - name: Add upstream remote
         run: |
-          git remote add upstream https://github.com/Skatteetaten/trekktabell.git
+          git remote get-url upstream || git remote add upstream https://github.com/Skatteetaten/trekktabell.git
           git fetch upstream
 
       - name: Rebase main onto upstream/main
