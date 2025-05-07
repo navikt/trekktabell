@@ -22,23 +22,28 @@ jobs:
           git checkout master
           git reset --hard origin/master
 
-      - name: Print current HEAD and remotes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          echo "HEAD: $(git rev-parse HEAD)"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git
-          git fetch origin master
-          echo "Origin/master: $(git rev-parse origin/master)"
-          git log --oneline --graph --decorate --all -n 10
-
       - name: Add upstream remote
         run: |
           git remote get-url upstream || git remote add upstream https://github.com/Skatteetaten/trekktabell.git
           git fetch upstream
 
       - name: Rebase main onto upstream/main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git
+          git fetch origin master
+          git fetch upstream master
+          git checkout -B rebased master
           git rebase upstream/master || git rebase --abort
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} master --force-with-lease
+          # Check if anything changed
+          if git diff --quiet origin/master HEAD; then
+            echo "No changes after rebase."
+            exit 0
+          fi
+          echo "Changes detected, creating PR..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git push origin HEAD:rebase-temp --force
+          gh pr create --head rebase-temp --base master --title "Sync with upstream" --body "Automated rebase with upstream/master"
